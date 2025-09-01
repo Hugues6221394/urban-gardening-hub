@@ -1,29 +1,16 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import NotificationBell from './notifications/NotificationBell';
 
-// Update Navbar.js to show different links based on authentication
 const Navbar = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userType, setUserType] = useState(null);
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
-
-        if (token && userData) {
-            setIsAuthenticated(true);
-            const user = JSON.parse(userData);
-            setUserType(user.userType);
-        }
-    }, []);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setIsAuthenticated(false);
-        setUserType(null);
-        window.location.href = '/';
+        logout();
+        navigate('/');
     };
 
     return (
@@ -32,7 +19,12 @@ const Navbar = () => {
                 <Link className="navbar-brand" to="/">
                     🌱 Urban Kitchen Gardening Hub
                 </Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button
+                    className="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                >
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
@@ -46,29 +38,46 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/marketplace">Marketplace</Link>
                         </li>
-                        {isAuthenticated && userType === 'LANDOWNER' && (
+                        {user && user.userType === 'LANDOWNER' && (
                             <li className="nav-item">
                                 <Link className="nav-link" to="/add-space">Add Space</Link>
                             </li>
                         )}
-                        {isAuthenticated && userType === 'URBAN_FARMER' && (
+                        {user && user.userType === 'URBAN_FARMER' && (
                             <li className="nav-item">
                                 <Link className="nav-link" to="/marketplace/sell">Sell Produce</Link>
                             </li>
                         )}
-                        {isAuthenticated && userType === 'ADMIN' && (
+                        {user && user.userType === 'ADMIN' && (
                             <li className="nav-item">
                                 <Link className="nav-link" to="/admin">Admin</Link>
                             </li>
                         )}
                     </ul>
                     <ul className="navbar-nav ms-auto">
-                        {isAuthenticated ? (
+                        {user ? (
                             <>
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/dashboard">
                                         <i className="fas fa-tachometer-alt me-1"></i> Dashboard
                                     </Link>
+                                </li>
+                                {user.userType === 'RESTAURANT' || user.userType === 'SUPERMARKET' ? (
+                                    <li className="nav-item">
+                                        <Link className="nav-link" to="/green-partner">
+                                            <i className="fas fa-certificate me-1"></i> Green Partner
+                                        </Link>
+                                    </li>
+                                ) : null}
+                                {user.userType === 'URBAN_FARMER' && (
+                                    <li className="nav-item">
+                                        <Link className="nav-link" to="/iot-dashboard">
+                                            <i className="fas fa-microchip me-1"></i> IoT Dashboard
+                                        </Link>
+                                    </li>
+                                )}
+                                <li className="nav-item">
+                                    <NotificationBell />
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/profile">

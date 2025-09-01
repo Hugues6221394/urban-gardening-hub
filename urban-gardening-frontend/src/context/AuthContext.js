@@ -1,3 +1,4 @@
+// src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -15,7 +16,18 @@ export const AuthProvider = ({ children }) => {
         const userData = localStorage.getItem('user');
 
         if (token && userData) {
-            setUser(JSON.parse(userData));
+            try {
+                // Handle case where userData might be "undefined" string or invalid JSON
+                const parsedUser = JSON.parse(userData);
+                if (parsedUser && typeof parsedUser === 'object') {
+                    setUser(parsedUser);
+                }
+            } catch (error) {
+                console.error('Error parsing user data from localStorage:', error);
+                // Clear invalid data from localStorage
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+            }
         }
         setLoading(false);
     }, []);

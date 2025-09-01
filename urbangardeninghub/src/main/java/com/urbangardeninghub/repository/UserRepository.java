@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     long countByIsVerifiedFalse();
     List<User> findTop5ByOrderByCreatedAtDesc();
+
+    List<User> findByGreenPartnerStatus(User.GreenPartnerStatus greenPartnerStatus);
 }

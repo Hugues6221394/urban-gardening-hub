@@ -1,19 +1,147 @@
+/* App.css - Responsive Improvements */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 
-.App {
-  text-align: left;
+  .navbar-nav .nav-item {
+    margin: 0.2rem;
+  }
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+
+  .btn-group .btn {
+    font-size: 0.75rem;
+  }
+
+  .jumbotron .display-4 {
+    font-size: 2rem;
+  }
+
+  .jumbotron .lead {
+    font-size: 1rem;
+  }
 }
 
-.jumbotron {
-  background-color: #f8f9fa;
-  padding: 2rem;
-  border-radius: 0.3rem;
+/* Mobile-friendly forms */
+@media (max-width: 576px) {
+  .form-control, .form-select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .table th, .table td {
+    padding: 0.5rem;
+  }
 }
 
+/* Improve touch targets for mobile */
+.btn, .nav-link, .form-check-label {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Loading states */
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+/* Error states */
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
+}
+
+/* Success states */
+.is-valid {
+  border-color: #198754;
+}
+
+.valid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #198754;
+}
+
+/* Card hover effects */
 .card {
-  transition: transform 0.2s;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Custom button styles */
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+/* Custom badge styles */
+.badge {
+  font-size: 0.75em;
+}
+
+/* Animation for notifications */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.notification-item {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Print styles */
+@media print {
+  .navbar, .btn, .no-print {
+    display: none !important;
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+  }
 }

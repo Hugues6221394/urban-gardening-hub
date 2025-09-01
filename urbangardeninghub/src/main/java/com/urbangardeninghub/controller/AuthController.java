@@ -1,11 +1,18 @@
+// Update AuthController.java
 package com.urbangardeninghub.controller;
 
+import com.urbangardeninghub.config.JwtUtils;
+import com.urbangardeninghub.config.UserPrincipal;
 import com.urbangardeninghub.dto.LoginRequest;
 import com.urbangardeninghub.dto.SignupRequest;
 import com.urbangardeninghub.entity.User;
 import com.urbangardeninghub.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +26,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
@@ -47,18 +56,32 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        // Simplified login - in production, use JWT tokens
         try {
-            User user = userService.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            // Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
 
-            // In a real implementation, we would verify password and return JWT token
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Generate JWT token
+            String jwt = jwtUtils.generateJwtToken(authentication);
+
+            // Get user details
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            User user = userPrincipal.getUser();
+
+            // Prepare response
             Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("userId", user.getId());
-            response.put("userType", user.getUserType());
-            response.put("firstName", user.getFirstName());
-            response.put("lastName", user.getLastName());
+            response.put("token", jwt);
+            response.put("user", Map.of(
+                    "id", user.getId(),
+                    "email", user.getEmail(),
+                    "firstName", user.getFirstName(),
+                    "lastName", user.getLastName(),
+                    "userType", user.getUserType(),
+                    "isVerified", user.getIsVerified()
+            ));
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {

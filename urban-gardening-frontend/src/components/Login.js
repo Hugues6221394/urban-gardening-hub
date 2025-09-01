@@ -1,4 +1,4 @@
-
+// Update Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ const Login = () => {
         password: ''
     });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -23,21 +24,32 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
         try {
             const response = await axios.post('http://localhost:8083/api/auth/login', formData);
 
-            // Store token and user data
-            const { token, user } = response.data;
-            login(user, token);
+            // Check if response contains token and user data
+            if (response.data.token && response.data.user) {
+                // Store token and user data
+                login(response.data.user, response.data.token);
 
-            // Redirect to dashboard
-            navigate('/dashboard');
+                // Redirect to dashboard
+                navigate('/dashboard');
+            } else {
+                setError('Invalid response from server');
+            }
         } catch (error) {
-            setError('Login failed. Please check your credentials.');
+            if (error.response && error.response.data && error.response.data.error) {
+                setError(error.response.data.error);
+            } else {
+                setError('Login failed. Please check your credentials and try again.');
+            }
             console.error('Login error:', error);
+        } finally {
+            setLoading(false);
         }
-};
+    };
 
     return (
         <div className="row justify-content-center">
@@ -57,6 +69,7 @@ const Login = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
+                                    disabled={loading}
                                 />
                             </div>
                             <div className="mb-3">
@@ -69,9 +82,23 @@ const Login = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
+                                    disabled={loading}
                                 />
                             </div>
-                            <button type="submit" className="btn btn-success w-100">Login</button>
+                            <button
+                                type="submit"
+                                className="btn btn-success w-100"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Logging in...
+                                    </>
+                                ) : (
+                                    'Login'
+                                )}
+                            </button>
                         </form>
                     </div>
                 </div>

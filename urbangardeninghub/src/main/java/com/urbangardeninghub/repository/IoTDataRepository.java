@@ -29,4 +29,6 @@ public interface IoTDataRepository extends JpaRepository<IoTData, Long> {
 
     @Query("SELECT i FROM IoTData i WHERE i.space.id = :spaceId ORDER BY i.timestamp DESC LIMIT :limit")
     List<IoTData> findLatestBySpaceId(@Param("spaceId") Long spaceId, @Param("limit") int limit);
+
+    List<IoTData> findLatestBySpaceIdAndSensorType(Long spaceId, IoTData.SensorType sensorType, int i);
 }

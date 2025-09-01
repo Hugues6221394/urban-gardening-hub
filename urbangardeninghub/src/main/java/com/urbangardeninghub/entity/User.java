@@ -83,6 +83,15 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private GreenPartnerStatus greenPartnerStatus = GreenPartnerStatus.NOT_CERTIFIED;
+
+    private LocalDateTime certificationDate;
+
+    public enum GreenPartnerStatus {
+        NOT_CERTIFIED, PENDING, CERTIFIED, REVOKED
+    }
+
     public enum UserType {
         URBAN_FARMER, LANDOWNER, RESTAURANT, SUPERMARKET, INDIVIDUAL, ADMIN
     }
@@ -90,4 +99,5 @@ public class User {
     public enum Role {
         ROLE_USER, ROLE_LANDOWNER, ROLE_FARMER, ROLE_BUYER, ROLE_ADMIN, ROLE_MODERATOR
     }
+
 }

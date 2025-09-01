@@ -1,6 +1,5 @@
 package com.urbangardeninghub.config;
 
-import com.urbangardeninghub.config.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,13 +50,13 @@ public class JwtUtils {
                     .parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
-            // logger.error("Invalid JWT token: {}", e.getMessage());
+            System.err.println("Invalid JWT token: " + e.getMessage());
         } catch (ExpiredJwtException e) {
-            // logger.error("JWT token is expired: {}", e.getMessage());
+            System.err.println("JWT token is expired: " + e.getMessage());
         } catch (UnsupportedJwtException e) {
-            // logger.error("JWT token is unsupported: {}", e.getMessage());
+            System.err.println("JWT token is unsupported: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            // logger.error("JWT claims string is empty: {}", e.getMessage());
+            System.err.println("JWT claims string is empty: " + e.getMessage());
         }
 
         return false;
